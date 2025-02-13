@@ -1,4 +1,3 @@
-import os
 import re
 import threading
 import time
@@ -8,8 +7,8 @@ from concurrent.futures import Future, ThreadPoolExecutor
 from bridge.context import *
 from bridge.reply import *
 from channel.channel import Channel
-from common.dequeue import Dequeue
 from common import memory
+from common.dequeue import Dequeue
 from plugins import *
 
 try:
@@ -295,141 +294,131 @@ class ChatChannel(Channel):
                 else:
                     logger.error("[chat_channel] unknown reply type: {}".format(reply.type))
                     return
-        if desire_rtype and desire_rtype != reply.type and reply.type not in [ReplyType.ERROR, ReplyType.INFO]:
-            logger.warning(
-                "[chat_channel] desire_rtype: {}, but reply type: {}".format(context.get("desire_rtype"), reply.type))
-        return reply
+            if desire_rtype and desire_rtype != reply.type and reply.type not in [ReplyType.ERROR, ReplyType.INFO]:
+                logger.warning("[chat_channel] desire_rtype: {}, but reply type: {}".format(context.get("desire_rtype"),
+                                                                                            reply.type))
+            return reply
 
-
-def _send_reply(self, context: Context, reply: Reply):
-    if reply and reply.type:
-        e_context = PluginManager().emit_event(
-            EventContext(
-                Event.ON_SEND_REPLY,
-                {"channel": self, "context": context, "reply": reply},
+    def _send_reply(self, context: Context, reply: Reply):
+        if reply and reply.type:
+            e_context = PluginManager().emit_event(
+                EventContext(
+                    Event.ON_SEND_REPLY,
+                    {"channel": self, "context": context, "reply": reply},
+                )
             )
-        )
-        reply = e_context["reply"]
-        if not e_context.is_pass() and reply and reply.type:
-            logger.debug("[chat_channel] ready to send reply: {}, context: {}".format(reply, context))
-            self._send(reply, context)
+            reply = e_context["reply"]
+            if not e_context.is_pass() and reply and reply.type:
+                logger.debug("[chat_channel] ready to send reply: {}, context: {}".format(reply, context))
+                self._send(reply, context)
 
-
-def _send(self, reply: Reply, context: Context, retry_cnt=0):
-    try:
-        self.send(reply, context)
-    except Exception as e:
-        logger.error("[chat_channel] sendMsg error: {}".format(str(e)))
-        if isinstance(e, NotImplementedError):
-            return
-        logger.exception(e)
-        if retry_cnt < 2:
-            time.sleep(3 + 3 * retry_cnt)
-            self._send(reply, context, retry_cnt + 1)
-
-
-# 处理好友申请
-def _build_friend_request_reply(self, context):
-    if isinstance(context.content, dict) and "Content" in context.content:
-        logger.info("friend request content: {}".format(context.content["Content"]))
-        if context.content["Content"] in conf().get("accept_friend_commands", []):
-            return Reply(type=ReplyType.ACCEPT_FRIEND, content=True)
-        else:
-            return Reply(type=ReplyType.ACCEPT_FRIEND, content=False)
-    else:
-        logger.error("Invalid context content: {}".format(context.content))
-        return None
-
-
-def _success_callback(self, session_id, **kwargs):  # 线程正常结束时的回调函数
-    logger.debug("Worker return success, session_id = {}".format(session_id))
-
-
-def _fail_callback(self, session_id, exception, **kwargs):  # 线程异常结束时的回调函数
-    logger.exception("Worker return exception: {}".format(exception))
-
-
-def _thread_pool_callback(self, session_id, **kwargs):
-    def func(worker: Future):
+    def _send(self, reply: Reply, context: Context, retry_cnt=0):
         try:
-            worker_exception = worker.exception()
-            if worker_exception:
-                self._fail_callback(session_id, exception=worker_exception, **kwargs)
-            else:
-                self._success_callback(session_id, **kwargs)
-        except CancelledError as e:
-            logger.info("Worker cancelled, session_id = {}".format(session_id))
+            self.send(reply, context)
         except Exception as e:
-            logger.exception("Worker raise exception: {}".format(e))
-        with self.lock:
-            self.sessions[session_id][1].release()
+            logger.error("[chat_channel] sendMsg error: {}".format(str(e)))
+            if isinstance(e, NotImplementedError):
+                return
+            logger.exception(e)
+            if retry_cnt < 2:
+                time.sleep(3 + 3 * retry_cnt)
+                self._send(reply, context, retry_cnt + 1)
 
-    return func
-
-
-def produce(self, context: Context):
-    session_id = context.get("session_id", 0)
-    with self.lock:
-        if session_id not in self.sessions:
-            self.sessions[session_id] = [
-                Dequeue(),
-                threading.BoundedSemaphore(conf().get("concurrency_in_session", 4)),
-            ]
-        if context.type == ContextType.TEXT and context.content.startswith("#"):
-            self.sessions[session_id][0].putleft(context)  # 优先处理管理命令
+    # 处理好友申请
+    def _build_friend_request_reply(self, context):
+        if isinstance(context.content, dict) and "Content" in context.content:
+            logger.info("friend request content: {}".format(context.content["Content"]))
+            if context.content["Content"] in conf().get("accept_friend_commands", []):
+                return Reply(type=ReplyType.ACCEPT_FRIEND, content=True)
+            else:
+                return Reply(type=ReplyType.ACCEPT_FRIEND, content=False)
         else:
-            self.sessions[session_id][0].put(context)
+            logger.error("Invalid context content: {}".format(context.content))
+            return None
 
+    def _success_callback(self, session_id, **kwargs):  # 线程正常结束时的回调函数
+        logger.debug("Worker return success, session_id = {}".format(session_id))
 
-# 消费者函数，单独线程，用于从消息队列中取出消息并处理
-def consume(self):
-    while True:
-        with self.lock:
-            session_ids = list(self.sessions.keys())
-        for session_id in session_ids:
-            with self.lock:
-                context_queue, semaphore = self.sessions[session_id]
-            if semaphore.acquire(blocking=False):  # 等线程处理完毕才能删除
-                if not context_queue.empty():
-                    context = context_queue.get()
-                    logger.debug("[chat_channel] consume context: {}".format(context))
-                    future: Future = handler_pool.submit(self._handle, context)
-                    future.add_done_callback(self._thread_pool_callback(session_id, context=context))
-                    with self.lock:
-                        if session_id not in self.futures:
-                            self.futures[session_id] = []
-                        self.futures[session_id].append(future)
-                elif semaphore._initial_value == semaphore._value + 1:  # 除了当前，没有任务再申请到信号量，说明所有任务都处理完毕
-                    with self.lock:
-                        self.futures[session_id] = [t for t in self.futures[session_id] if not t.done()]
-                        assert len(self.futures[session_id]) == 0, "thread pool error"
-                        del self.sessions[session_id]
+    def _fail_callback(self, session_id, exception, **kwargs):  # 线程异常结束时的回调函数
+        logger.exception("Worker return exception: {}".format(exception))
+
+    def _thread_pool_callback(self, session_id, **kwargs):
+        def func(worker: Future):
+            try:
+                worker_exception = worker.exception()
+                if worker_exception:
+                    self._fail_callback(session_id, exception=worker_exception, **kwargs)
                 else:
-                    semaphore.release()
-        time.sleep(0.2)
+                    self._success_callback(session_id, **kwargs)
+            except CancelledError as e:
+                logger.info("Worker cancelled, session_id = {}".format(session_id))
+            except Exception as e:
+                logger.exception("Worker raise exception: {}".format(e))
+            with self.lock:
+                self.sessions[session_id][1].release()
 
+        return func
 
-# 取消session_id对应的所有任务，只能取消排队的消息和已提交线程池但未执行的任务
-def cancel_session(self, session_id):
-    with self.lock:
-        if session_id in self.sessions:
-            for future in self.futures[session_id]:
-                future.cancel()
-            cnt = self.sessions[session_id][0].qsize()
-            if cnt > 0:
-                logger.info("Cancel {} messages in session {}".format(cnt, session_id))
-            self.sessions[session_id][0] = Dequeue()
+    def produce(self, context: Context):
+        session_id = context.get("session_id", 0)
+        with self.lock:
+            if session_id not in self.sessions:
+                self.sessions[session_id] = [
+                    Dequeue(),
+                    threading.BoundedSemaphore(conf().get("concurrency_in_session", 4)),
+                ]
+            if context.type == ContextType.TEXT and context.content.startswith("#"):
+                self.sessions[session_id][0].putleft(context)  # 优先处理管理命令
+            else:
+                self.sessions[session_id][0].put(context)
 
+    # 消费者函数，单独线程，用于从消息队列中取出消息并处理
+    def consume(self):
+        while True:
+            with self.lock:
+                session_ids = list(self.sessions.keys())
+            for session_id in session_ids:
+                with self.lock:
+                    context_queue, semaphore = self.sessions[session_id]
+                if semaphore.acquire(blocking=False):  # 等线程处理完毕才能删除
+                    if not context_queue.empty():
+                        context = context_queue.get()
+                        logger.debug("[chat_channel] consume context: {}".format(context))
+                        future: Future = handler_pool.submit(self._handle, context)
+                        future.add_done_callback(self._thread_pool_callback(session_id, context=context))
+                        with self.lock:
+                            if session_id not in self.futures:
+                                self.futures[session_id] = []
+                            self.futures[session_id].append(future)
+                    elif semaphore._initial_value == semaphore._value + 1:  # 除了当前，没有任务再申请到信号量，说明所有任务都处理完毕
+                        with self.lock:
+                            self.futures[session_id] = [t for t in self.futures[session_id] if not t.done()]
+                            assert len(self.futures[session_id]) == 0, "thread pool error"
+                            del self.sessions[session_id]
+                    else:
+                        semaphore.release()
+            time.sleep(0.2)
 
-def cancel_all_session(self):
-    with self.lock:
-        for session_id in self.sessions:
-            for future in self.futures[session_id]:
-                future.cancel()
-            cnt = self.sessions[session_id][0].qsize()
-            if cnt > 0:
-                logger.info("Cancel {} messages in session {}".format(cnt, session_id))
-            self.sessions[session_id][0] = Dequeue()
+    # 取消session_id对应的所有任务，只能取消排队的消息和已提交线程池但未执行的任务
+    def cancel_session(self, session_id):
+        with self.lock:
+            if session_id in self.sessions:
+                for future in self.futures[session_id]:
+                    future.cancel()
+                cnt = self.sessions[session_id][0].qsize()
+                if cnt > 0:
+                    logger.info("Cancel {} messages in session {}".format(cnt, session_id))
+                self.sessions[session_id][0] = Dequeue()
+
+    def cancel_all_session(self):
+        with self.lock:
+            for session_id in self.sessions:
+                for future in self.futures[session_id]:
+                    future.cancel()
+                cnt = self.sessions[session_id][0].qsize()
+                if cnt > 0:
+                    logger.info("Cancel {} messages in session {}".format(cnt, session_id))
+                self.sessions[session_id][0] = Dequeue()
 
 
 def check_prefix(content, prefix_list):

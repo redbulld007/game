@@ -18,7 +18,6 @@ import uuid
 
 MAX_UTF8_LEN = 2048
 
-
 @singleton
 class GeWeChatChannel(ChatChannel):
     NOT_SUPPORT_REPLYTYPE = []
@@ -55,8 +54,7 @@ class GeWeChatChannel(ChatChannel):
         if not self.download_url:
             logger.warning("[gewechat] download_url is not set, unable to download image")
 
-        logger.info(
-            f"[gewechat] init: base_url: {self.base_url}, token: {self.token}, app_id: {self.app_id}, download_url: {self.download_url}")
+        logger.info(f"[gewechat] init: base_url: {self.base_url}, token: {self.token}, app_id: {self.app_id}, download_url: {self.download_url}")
 
     def startup(self):
         # 如果app_id为空或登录后获取到新的app_id，保存配置
@@ -129,7 +127,7 @@ class GeWeChatChannel(ChatChannel):
                     else:
                         self.client.post_text(self.app_id, receiver, msg, "")
 
-                    logger.info(f"[gewechat] Send message part {i + 1}/{len(messages)}: {msg}")
+                    logger.info(f"[gewechat] Send message part {i+1}/{len(messages)}: {msg}")
 
                     # 添加发送间隔，避免消息发送太快
                     if i < len(messages) - 1:
@@ -148,8 +146,7 @@ class GeWeChatChannel(ChatChannel):
                     callback_url = conf().get("gewechat_callback_url")
                     silk_url = callback_url + "?file=" + silk_path
                     self.client.post_voice(self.app_id, receiver, silk_url, duration)
-                    logger.info(
-                        f"[gewechat] Do send voice to {receiver}: {silk_url}, duration: {duration / 1000.0} seconds")
+                    logger.info(f"[gewechat] Do send voice to {receiver}: {silk_url}, duration: {duration/1000.0} seconds")
                     return
                 else:
                     logger.error(f"[gewechat] voice file is not mp3, path: {content}, only support mp3")
@@ -174,7 +171,6 @@ class GeWeChatChannel(ChatChannel):
             self.client.post_image(self.app_id, receiver, img_url)
             logger.info("[gewechat] sendImage, receiver={}, url={}".format(receiver, img_url))
 
-
 class Query:
     def GET(self):
         # 搭建简单的文件服务器，用于向gewechat服务传输语音等文件，但只允许访问tmp目录下的文件
@@ -187,8 +183,7 @@ class Query:
             tmp_dir = os.path.abspath("tmp")
             # 检查文件路径是否在tmp目录下
             if not clean_path.startswith(tmp_dir):
-                logger.error(
-                    f"[gewechat] Forbidden access to file outside tmp directory: file_path={file_path}, clean_path={clean_path}, tmp_dir={tmp_dir}")
+                logger.error(f"[gewechat] Forbidden access to file outside tmp directory: file_path={file_path}, clean_path={clean_path}, tmp_dir={tmp_dir}")
                 raise web.forbidden()
 
             if os.path.exists(clean_path):
@@ -224,14 +219,12 @@ class Query:
 
         # 忽略来自自己的消息
         if gewechat_msg.my_msg:
-            logger.debug(
-                f"[gewechat] ignore message from myself: {gewechat_msg.actual_user_id}: {gewechat_msg.content}")
+            logger.debug(f"[gewechat] ignore message from myself: {gewechat_msg.actual_user_id}: {gewechat_msg.content}")
             return "success"
 
         # 忽略过期的消息
-        if int(gewechat_msg.create_time) < int(time.time()) - 60 * 5:  # 跳过5分钟前的历史消息
-            logger.debug(
-                f"[gewechat] ignore expired message from {gewechat_msg.actual_user_id}: {gewechat_msg.content}")
+        if int(gewechat_msg.create_time) < int(time.time()) - 60 * 5: # 跳过5分钟前的历史消息
+            logger.debug(f"[gewechat] ignore expired message from {gewechat_msg.actual_user_id}: {gewechat_msg.content}")
             return "success"
 
         context = channel._compose_context(
