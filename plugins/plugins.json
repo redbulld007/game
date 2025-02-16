@@ -24,12 +24,12 @@
             "enabled": false,
             "priority": 10
         },
-        "Role": {
-            "enabled": false,
-            "priority": 0
-        },
         "Game": {
             "enabled": true,
+            "priority": 1
+        },
+        "Role": {
+            "enabled": false,
             "priority": 0
         },
         "Dungeon": {

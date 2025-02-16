@@ -19,6 +19,8 @@ chatgpt_tool_hub/
 plugins/**/
 plugins/**/config.json
 !plugins/bdunit
+!plugins/game/**
+!plugins/game/data
 !plugins/dungeon
 !plugins/finish
 !plugins/godcmd

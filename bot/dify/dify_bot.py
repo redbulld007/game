@@ -20,7 +20,7 @@ from common.utils import parse_markdown_text, print_red
 from common.tmp_dir import TmpDir
 from config import conf
 
-UNKNOWN_ERROR_MSG = "我暂时遇到了一些问题，请您稍后重试~"
+UNKNOWN_ERROR_MSG = "指令错误 查看游戏菜单"
 
 class DifyBot(Bot):
     def __init__(self):

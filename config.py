@@ -16,7 +16,7 @@ available_setting = {
     "web_ui_username": "dow",
     "web_ui_password": "dify-on-wechat",
     # 错误回复消息
-    "error_reply": "我暂时遇到了一些问题，请您稍后重试~",
+    "error_reply": "老弟，你一定是输错命令了，输入游戏菜单 看看吧",
     # openai api配置
     "open_ai_api_key": "",  # openai api key
     # openai apibase，当use_azure_chatgpt为true时，需要设置对应的api base
