@@ -10,7 +10,7 @@ class Item:
     def __init__(self, data_dir: str):
         self.data_dir = data_dir
         self.item_file = f"{data_dir}/items.csv"
-        
+
     def get_all_items(self) -> Dict[str, Dict[str, Any]]:
         """获取所有物品信息"""
         items_info = {}

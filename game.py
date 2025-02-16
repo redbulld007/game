@@ -639,7 +639,7 @@ class Game(Plugin):
                             # 扣除玩家金币
                             new_player_gold = int(player.gold) - rent
                             self._update_player_data(user_id, {'gold': str(new_player_gold)})
-                            
+
                             # 增加房主金币
                             owner_new_gold = int(owner_player.gold) + rent
                             self._update_player_data(owner, {'gold': str(owner_new_gold)})

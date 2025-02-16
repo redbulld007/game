@@ -1,0 +1,38 @@
+{
+  "good_events": [
+    {
+      "id": "treasure",
+      "name": "发现宝藏",
+      "description": "你发现了一个古老的宝箱",
+      "effect": {
+        "gold": 500
+      }
+    },
+    {
+      "id": "lottery",
+      "name": "中奖啦",
+      "description": "你买的彩票中奖了",
+      "effect": {
+        "gold": 300
+      }
+    }
+  ],
+  "bad_events": [
+    {
+      "id": "tax",
+      "name": "缴税",
+      "description": "需要缴纳一些税款",
+      "effect": {
+        "gold": -200
+      }
+    },
+    {
+      "id": "robbery",
+      "name": "被偷窃",
+      "description": "你的钱包被偷了",
+      "effect": {
+        "gold": -100
+      }
+    }
+  ]
+}

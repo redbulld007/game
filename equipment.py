@@ -48,7 +48,7 @@ class Equipment:
         # 从背包中移除新装备
         inventory.remove(item_name)
         updates['inventory'] = inventory
-        
+
         # 更新玩家数据
         self.game._update_player_data(user_id, updates)
         

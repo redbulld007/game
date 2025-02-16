@@ -1,0 +1,251 @@
+{
+  "total_blocks": 50,
+  "blocks": {
+    "0": {
+      "type": "起点",
+      "name": "首都北京",
+      "description": "每次经过可获得200金币",
+      "region": "直辖市"
+    },
+    "12": {
+      "type": "直辖市",
+      "name": "上海",
+      "description": "繁华的国际大都市",
+      "region": "直辖市"
+    },
+    "25": {
+      "type": "直辖市",
+      "name": "重庆",
+      "description": "山城魅力",
+      "region": "直辖市"
+    },
+    "37": {
+      "type": "直辖市",
+      "name": "天津",
+      "description": "北方港口城市",
+      "region": "直辖市"
+    },
+    "5": {
+      "type": "省会",
+      "name": "广州",
+      "description": "广东省会",
+      "region": "省会"
+    },
+    "17": {
+      "type": "省会",
+      "name": "成都",
+      "description": "四川省会",
+      "region": "省会"
+    },
+    "30": {
+      "type": "省会",
+      "name": "杭州",
+      "description": "浙江省会",
+      "region": "省会"
+    },
+    "42": {
+      "type": "省会",
+      "name": "南京",
+      "description": "江苏省会",
+      "region": "省会"
+    },
+    "6": {
+      "type": "省会",
+      "name": "武汉",
+      "description": "湖北省会",
+      "region": "省会"
+    },
+    "18": {
+      "type": "省会",
+      "name": "长沙",
+      "description": "湖南省会",
+      "region": "省会"
+    },
+    "31": {
+      "type": "省会",
+      "name": "西安",
+      "description": "陕西省会",
+      "region": "省会"
+    },
+    "43": {
+      "type": "省会",
+      "name": "郑州",
+      "description": "河南省会",
+      "region": "省会"
+    },
+    "7": {
+      "type": "地级市",
+      "name": "苏州",
+      "description": "江苏重要城市",
+      "region": "地级市"
+    },
+    "20": {
+      "type": "地级市",
+      "name": "青岛",
+      "description": "山东重要城市",
+      "region": "地级市"
+    },
+    "32": {
+      "type": "地级市",
+      "name": "厦门",
+      "description": "福建重要城市",
+      "region": "地级市"
+    },
+    "45": {
+      "type": "地级市",
+      "name": "大连",
+      "description": "辽宁重要城市",
+      "region": "地级市"
+    },
+    "8": {
+      "type": "地级市",
+      "name": "宁波",
+      "description": "浙江重要城市",
+      "region": "地级市"
+    },
+    "21": {
+      "type": "地级市",
+      "name": "无锡",
+      "description": "江苏重要城市",
+      "region": "地级市"
+    },
+    "33": {
+      "type": "地级市",
+      "name": "珠海",
+      "description": "广东重要城市",
+      "region": "地级市"
+    },
+    "46": {
+      "type": "地级市",
+      "name": "深圳",
+      "description": "广东重要城市",
+      "region": "地级市"
+    },
+    "2": {
+      "type": "县城",
+      "name": "周庄古镇",
+      "description": "江南水乡",
+      "region": "县城"
+    },
+    "15": {
+      "type": "县城",
+      "name": "凤凰古城",
+      "description": "湘西名城",
+      "region": "县城"
+    },
+    "27": {
+      "type": "县城",
+      "name": "婺源县",
+      "description": "徽派建筑",
+      "region": "县城"
+    },
+    "40": {
+      "type": "县城",
+      "name": "丽江古城",
+      "description": "云南名城",
+      "region": "县城"
+    },
+    "3": {
+      "type": "县城",
+      "name": "乌镇",
+      "description": "浙江古镇",
+      "region": "县城"
+    },
+    "16": {
+      "type": "县城",
+      "name": "平遥古城",
+      "description": "山西古城",
+      "region": "县城"
+    },
+    "28": {
+      "type": "县城",
+      "name": "西塘古镇",
+      "description": "江南古镇",
+      "region": "县城"
+    },
+    "41": {
+      "type": "县城",
+      "name": "阳朔县",
+      "description": "桂林山水",
+      "region": "县城"
+    },
+    "10": {
+      "type": "乡村",
+      "name": "婺源篁岭",
+      "description": "徽州晒秋",
+      "region": "乡村"
+    },
+    "22": {
+      "type": "乡村",
+      "name": "阿坝草原",
+      "description": "四川草原",
+      "region": "乡村"
+    },
+    "35": {
+      "type": "乡村",
+      "name": "婺源晓起",
+      "description": "徽州村落",
+      "region": "乡村"
+    },
+    "47": {
+      "type": "乡村",
+      "name": "云南梯田",
+      "description": "哈尼梯田",
+      "region": "乡村"
+    },
+    "11": {
+      "type": "乡村",
+      "name": "江西武功山",
+      "description": "高山草甸",
+      "region": "乡村"
+    },
+    "23": {
+      "type": "乡村",
+      "name": "新疆喀纳斯",
+      "description": "图瓦人村落",
+      "region": "乡村"
+    },
+    "36": {
+      "type": "乡村",
+      "name": "福建土楼",
+      "description": "客家文化",
+      "region": "乡村"
+    },
+    "48": {
+      "type": "乡村",
+      "name": "西双版纳",
+      "description": "傣族村寨",
+      "region": "乡村"
+    },
+    "9": {
+      "type": "机遇",
+      "name": "机遇空间",
+      "description": "触发随机事件",
+      "region": "机遇"
+    },
+    "19": {
+      "type": "机遇",
+      "name": "命运转盘",
+      "description": "触发随机事件",
+      "region": "机遇"
+    },
+    "34": {
+      "type": "机遇",
+      "name": "幸运空间",
+      "description": "触发随机事件",
+      "region": "机遇"
+    },
+    "44": {
+      "type": "机遇",
+      "name": "命运空间",
+      "description": "触发随机事件",
+      "region": "机遇"
+    }
+  },
+  "default_block": {
+    "type": "森林",
+    "name": "神秘森林",
+    "description": "危险的森林,可能遇到怪物",
+    "region": "森林"
+  }
+}
